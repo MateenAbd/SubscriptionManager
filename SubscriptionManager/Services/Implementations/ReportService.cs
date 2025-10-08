@@ -23,7 +23,7 @@ namespace SubscriptionManager.Services.Implementations
             using var conn = _db.CreateConnection();
             await EnsureOpenAsync(conn, ct);
 
-            // Wraps the function via stored procedure for clarity
+            
             const string sql = "EXEC dbo.sp_CalculateRevenue @Start, @End;";
             var revenue = await conn.ExecuteScalarAsync<decimal>(sql, new { Start = from, End = to });
             return revenue;

@@ -44,7 +44,7 @@ namespace SubscriptionManager.Controllers
                 await SignInAsync(user);
                 _logProducer.TryWrite(new LogMessage { UserId = user.UserId, Action = "UserLogin", Message = "User logged in after registration." });
 
-                // Also issue JWT and store in HttpOnly cookie for convenience
+                
                 var token = _jwt.Generate(user);
                 Response.Cookies.Append("AppJwt", token, new Microsoft.AspNetCore.Http.CookieOptions { HttpOnly = true, Secure = false, SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax });
 

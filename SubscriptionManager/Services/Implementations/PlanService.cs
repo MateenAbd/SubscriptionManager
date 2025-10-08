@@ -95,7 +95,7 @@ OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
         {
             ct.ThrowIfCancellationRequested();
 
-            // Use stored procedure for upsert by Name; here it's effectively an insert (unique Name).
+            
             var p = new DynamicParameters();
             p.Add("@Name", vm.Name);
             p.Add("@Description", vm.Description);

@@ -86,7 +86,7 @@ namespace SubscriptionManager.Controllers
         {
             var sub = await _subs.GetByIdAsync(id, ct);
             if (sub == null || sub.UserId != CurrentUserId) return NotFound();
-            // Optional: block renew if already cancelled
+            
             if (string.Equals(sub.Status, SubscriptionStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
             {
                 TempData["Error"] = "Cancelled subscriptions cannot be renewed.";

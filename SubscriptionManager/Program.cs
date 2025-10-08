@@ -17,6 +17,8 @@ using System.Text;
 using System.Threading.Channels;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -43,12 +45,30 @@ builder.Services.AddSingleton<IChannelProducer<NotificationMessage>>(sp => new C
 // Services
 builder.Services.AddScoped<IPlanService, PlanService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<ISubscriptionService, SubscriptionService>(); // used by hosted service
+builder.Services.AddSingleton<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IReportService, ReportService>();
-builder.Services.AddSingleton<ILogService, LogService>();                 // used by hosted service
-builder.Services.AddSingleton<INotificationService, NotificationService>(); // used by hosted service
-builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>(); // can be singleton (only reads options)
+builder.Services.AddSingleton<ILogService, LogService>();
+builder.Services.AddSingleton<INotificationService, NotificationService>();
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>(); 
+
+
+builder.Services.AddSingleton<IOutboxService, OutboxService>();
+builder.Services.AddHostedService<OutboxDispatcher>();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("webhooks", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anon",
+            factory: key => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 30,
+                Window = TimeSpan.FromSeconds(10),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            }));
+});
 
 // Background services
 builder.Services.AddHostedService<LogChannelConsumer>();
@@ -133,6 +153,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseRateLimiter();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -144,7 +166,7 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var userSvc = scope.ServiceProvider.GetRequiredService<IUserService>();
-    try { await userSvc.EnsureSeededPasswordHashesAsync(); } catch { /* ignore to not block startup */ }
+    try { await userSvc.EnsureSeededPasswordHashesAsync(); } catch {  }
 }
 
 app.Run();

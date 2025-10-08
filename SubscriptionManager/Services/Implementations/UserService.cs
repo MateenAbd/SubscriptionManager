@@ -312,7 +312,7 @@ ORDER BY pm.PaymentDate DESC;";
             }
             catch
             {
-                try { tx.Rollback(); } catch { /* ignore */ }
+                try { tx.Rollback(); } catch { }
                 throw;
             }
         }

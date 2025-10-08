@@ -20,7 +20,7 @@ namespace SubscriptionManager.Services.Implementations
 
         public async Task HandleAsync(NotificationMessage message, CancellationToken ct = default)
         {
-            // Simulate sending (email/SMS). In real life, integrate with provider.
+            // Simulate sending (email/SMS). actually we should integrate with provider
             _logger.LogInformation("Notify UserId={UserId} Type={Type} Subject={Subject}", message.UserId, message.Type, message.Subject);
             Console.WriteLine($"[Notify] {message.Type} to User {message.UserId}: {message.Subject}");
 

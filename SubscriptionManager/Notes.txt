@@ -1,0 +1,51 @@
+﻿subscription management app (plans, users, subscriptions, payments, reports).
+Channels + BackgroundServices for async logging/notifications.
+Secure, idempotent payment webhooks + Outbox dispatcher.
+
+
+Core features:
+Auth: Register/Login/Logout, roles (Admin, Subscriber)
+Plans: Admin CRUD, unique name, pagination, search, sort, CSV/JSON export
+Users: Admin CRUD, email uniqueness, details show subscriptions + payments
+Subscriptions: Subscribe, renew, cancel, daily expiry check job
+Payments: Record/mock payments, filter, totals, refund
+Reports: Revenue, plan metrics, churn
+
+Webhooks + Outbox:
+Secure payment webhooks at /api/webhooks/payments
+HMAC SHA‑256 signature check (X‑Signature) with shared secret
+Updates payment status (Completed/Refunded), then writes a message to OutboxMessages
+OutboxDispatcher background service reads OutboxMessages and delivers notifications via Channels, with retry and error tracking
+Rate-limited endpoint to protect from abuse
+
+Architecture:
+MVC controllers call small services
+Channels decouple writes: controllers/services enqueue LogMessage/NotificationMessage
+Background consumers persist logs, send notifications, and run daily expiry checks
+
+
+Database:
+Tables: Plans, Users, Subscriptions, Payments, Logs, WebhookEvents, OutboxMessages
+Indexes on Email/StartDate/PaymentDate/LogDate
+Procs/Views/Functions: plan upsert, revenue, expired subs, bulk users, vw_ActiveSubscriptions, vw_UserPaymentHistory, fn_IsSubscriptionActive
+Triggers: update Plans.UpdatedAt; auto EndDate on Subscription insert
+
+
+Security:
+BCrypt hashed passwords, claims-based auth, anti-forgery on forms
+JWT for API endpoints
+All SQL parameterized
+HMAC verification + idempotency on webhooks
+
+
+Test logins:
+Admin: admin@example.com / admin
+Subscriber: sub@example.com / subscriber
+
+
+Things that will make it actually working:
+Real payments: integrate Stripe/PayPal instead of mock; handle “succeeded/failed/refunded” webhooks with HMAC signature, idempotency (EventId), retries.
+Email/SMS notifications: plug in a provider (SendGrid/SMTP, Twilio). Move NotificationService to call the provider, not just log.
+Identity flows: email verification, password reset with tokens, account lockout, optional MFA.
+....
+

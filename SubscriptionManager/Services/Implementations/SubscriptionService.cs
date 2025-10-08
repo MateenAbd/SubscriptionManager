@@ -52,7 +52,7 @@ namespace SubscriptionManager.Services.Implementations
                 var now = DateTime.UtcNow;
                 var end = now.AddDays(plan.DurationDays);
 
-                // Create subscription
+                
                 const string subSql = @"
 INSERT INTO dbo.Subscriptions (UserId, PlanId, StartDate, EndDate, RenewalDate, [Status], AutoRenew)
 OUTPUT INSERTED.SubscriptionId
@@ -66,7 +66,7 @@ VALUES (@UserId, @PlanId, @StartDate, @EndDate, NULL, 'Active', @AutoRenew);";
                     AutoRenew = autoRenew ? 1 : 0
                 }, tx);
 
-                // Payment (mock gateway)
+                // mockk payment gateway
                 const string paySql = @"
 INSERT INTO dbo.Payments (SubscriptionId, Amount, PaymentDate, PaymentMethod, TransactionId, [Status])
 OUTPUT INSERTED.PaymentId
@@ -107,7 +107,7 @@ VALUES (@SubscriptionId, @Amount, GETDATE(), @PaymentMethod, @TransactionId, 'Co
             }
             catch
             {
-                try { tx.Rollback(); } catch { /* ignore */ }
+                try { tx.Rollback(); } catch { }
                 throw;
             }
         }
@@ -177,7 +177,7 @@ VALUES (@SubscriptionId, @Amount, GETDATE(), @PaymentMethod, @TransactionId, 'Co
             }
             catch
             {
-                try { tx.Rollback(); } catch { /* ignore */ }
+                try { tx.Rollback(); } catch {  }
                 throw;
             }
         }
@@ -210,7 +210,7 @@ WHERE s.SubscriptionId = @SubscriptionId;";
 
                 var now = DateTime.UtcNow;
 
-                // Compute pro‑rata refund
+                
                 var remainingDays = Math.Max(0, (int)Math.Ceiling((prevEnd.Date - now.Date).TotalDays));
                 remainingDays = Math.Min(remainingDays, durationDays);
                 decimal refundAmount = 0m;
@@ -219,14 +219,14 @@ WHERE s.SubscriptionId = @SubscriptionId;";
                     refundAmount = Math.Round(price * remainingDays / durationDays, 2, MidpointRounding.AwayFromZero);
                 }
 
-                // Cancel subscription
+                
                 const string cancelSql = @"
 UPDATE dbo.Subscriptions
 SET [Status] = 'Cancelled', EndDate = @Now, AutoRenew = 0
 WHERE SubscriptionId = @SubscriptionId;";
                 await conn.ExecuteAsync(cancelSql, new { Now = now, SubscriptionId = subscriptionId }, tx);
 
-                // Refund latest completed payment, if any
+                
                 const string lastPaySql = @"
 SELECT TOP 1 PaymentId, Amount
 FROM dbo.Payments

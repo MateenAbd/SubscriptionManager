@@ -21,7 +21,6 @@ namespace SubscriptionManager.Services.Implementations
             while (await _writer.WaitToWriteAsync(ct).ConfigureAwait(false))
             {
                 if (_writer.TryWrite(message)) return;
-                // If failed due to contention, loop and try again or cancellation will break
             }
         }
     }

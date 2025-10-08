@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -16,11 +17,13 @@ namespace SubscriptionManager.Services.Implementations
     {
         private readonly IDbConnectionFactory _db;
         private readonly IChannelProducer<LogMessage> _logProducer;
+        private readonly IOutboxService _outbox;
 
-        public PaymentService(IDbConnectionFactory db, IChannelProducer<LogMessage> logProducer)
+        public PaymentService(IDbConnectionFactory db, IChannelProducer<LogMessage> logProducer, IOutboxService outbox)
         {
             _db = db;
             _logProducer = logProducer;
+            _outbox = outbox;
         }
 
         public async Task<Page<Payment>> GetPagedAsync(PaymentFilterViewModel filter, CancellationToken ct = default)
@@ -101,6 +104,15 @@ VALUES (@SubscriptionId, @Amount, GETDATE(), @Method, @TxnId, @Status);";
                 Message = $"Payment {paymentId} recorded for subscription {subscriptionId} amount {amount:C}."
             });
 
+            var payload = JsonSerializer.Serialize(new
+            {
+                UserId = 0,
+                SubscriptionId = subscriptionId,
+                PaymentId = paymentId,
+                Amount = amount
+            });
+            await _outbox.EnqueueAsync("PaymentProcessed", payload, ct);
+
             return paymentId;
         }
 
@@ -133,11 +145,11 @@ WHERE p.PaymentId = @PaymentId;";
                 decimal amount = row.Amount;
                 DateTime endDate = row.EndDate;
 
-                // Set payment to Refunded
+                //set payment to Refunded
                 const string upPay = @"UPDATE dbo.Payments SET [Status] = 'Refunded' WHERE PaymentId = @PaymentId;";
                 await conn.ExecuteAsync(upPay, new { PaymentId = paymentId }, tx);
 
-                // Optionally cancel subscription if still active
+                //cancel subscription if still active
                 const string upSub = @"
 UPDATE dbo.Subscriptions
 SET [Status] = CASE WHEN [Status] = 'Active' THEN 'Cancelled' ELSE [Status] END,
@@ -148,7 +160,7 @@ WHERE SubscriptionId = @SubscriptionId;";
 
                 tx.Commit();
 
-                // Compute simple pro‑rata info for log (best effort)
+                
                 var now = DateTime.UtcNow;
                 var remainingDays = Math.Max(0, (int)Math.Ceiling((endDate.Date - now.Date).TotalDays));
                 remainingDays = Math.Min(remainingDays, durationDays);
@@ -163,7 +175,7 @@ WHERE SubscriptionId = @SubscriptionId;";
             }
             catch
             {
-                try { tx.Rollback(); } catch { /* ignore */ }
+                try { tx.Rollback(); } catch {}
                 throw;
             }
         }
