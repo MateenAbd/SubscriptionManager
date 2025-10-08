@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    decimal revenue = ViewBag.Revenue ?? 0m;
+    decimal churn = ViewBag.Churn ?? 0m;
+    double avg = ViewBag.AvgDuration ?? 0.0;
+    DateTime from = ViewBag.From ?? DateTime.UtcNow.AddDays(-30);
+    DateTime to = ViewBag.To ?? DateTime.UtcNow;
+}
+<h2 class="h4 mb-3">Admin Dashboard</h2>
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Revenue (Last 30 Days)</h6>
+                <div class="display-6">@revenue.ToString("C")</div>
+                <div class="small text-muted">@from.ToString("yyyy-MM-dd") – @to.ToString("yyyy-MM-dd")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Churn (Overall)</h6>
+                <div class="display-6">@churn.ToString("P2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Avg. Subscription Duration</h6>
+                <div class="display-6">@avg.ToString("0.0") days</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a class="btn btn-primary" asp-controller="Reports" asp-action="Index">Full Reports</a>
+    <a class="btn btn-outline-secondary" asp-controller="Users" asp-action="Index">Manage Users</a>
+    <a class="btn btn-outline-secondary" asp-controller="Plans" asp-action="Index">Manage Plans</a>
+</div>

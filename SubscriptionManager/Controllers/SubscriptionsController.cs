@@ -10,7 +10,7 @@ using SubscriptionManager.Services.Interfaces;
 
 namespace SubscriptionManager.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = AppRoles.Subscriber)]
     public class SubscriptionsController : Controller
     {
         private readonly ISubscriptionService _subs;
@@ -86,6 +86,12 @@ namespace SubscriptionManager.Controllers
         {
             var sub = await _subs.GetByIdAsync(id, ct);
             if (sub == null || sub.UserId != CurrentUserId) return NotFound();
+            // Optional: block renew if already cancelled
+            if (string.Equals(sub.Status, SubscriptionStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Cancelled subscriptions cannot be renewed.";
+                return RedirectToAction(nameof(Dashboard));
+            }
             return View(sub);
         }
 
@@ -97,6 +103,11 @@ namespace SubscriptionManager.Controllers
             {
                 var sub = await _subs.GetByIdAsync(id, ct);
                 if (sub == null || sub.UserId != CurrentUserId) return NotFound();
+                if (string.Equals(sub.Status, SubscriptionStatuses.Cancelled, StringComparison.OrdinalIgnoreCase))
+                {
+                    TempData["Error"] = "Cancelled subscriptions cannot be renewed.";
+                    return RedirectToAction(nameof(Dashboard));
+                }
 
                 await _subs.RenewAsync(id, paymentMethod, ct);
                 TempData["Toast"] = "Subscription renewed.";
@@ -114,6 +125,11 @@ namespace SubscriptionManager.Controllers
         {
             var sub = await _subs.GetByIdAsync(id, ct);
             if (sub == null || sub.UserId != CurrentUserId) return NotFound();
+            if (!string.Equals(sub.Status, SubscriptionStatuses.Active, StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Only active subscriptions can be cancelled.";
+                return RedirectToAction(nameof(Dashboard));
+            }
             return View(sub);
         }
 
@@ -125,6 +141,11 @@ namespace SubscriptionManager.Controllers
             {
                 var sub = await _subs.GetByIdAsync(id, ct);
                 if (sub == null || sub.UserId != CurrentUserId) return NotFound();
+                if (!string.Equals(sub.Status, SubscriptionStatuses.Active, StringComparison.OrdinalIgnoreCase))
+                {
+                    TempData["Error"] = "Only active subscriptions can be cancelled.";
+                    return RedirectToAction(nameof(Dashboard));
+                }
 
                 await _subs.CancelAsync(id, ct);
                 TempData["Toast"] = "Subscription cancelled.";

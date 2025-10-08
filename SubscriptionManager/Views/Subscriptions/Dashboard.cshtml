@@ -29,9 +29,20 @@
                                     <td><span class="badge bg-light text-dark">@s.Status</span></td>
                                     <td>@s.EndDate.ToString("yyyy-MM-dd")</td>
                                     <td class="text-end">
-                                        <a class="btn btn-outline-primary btn-sm" asp-action="Renew" asp-route-id="@s.SubscriptionId">Renew</a>
-                                        <a class="btn btn-outline-danger btn-sm" asp-action="Cancel" asp-route-id="@s.SubscriptionId">Cancel</a>
-                                    </td>
+    @if (s.Status == SubscriptionStatuses.Active)
+    {
+        <a class="btn btn-outline-primary btn-sm" asp-action="Renew" asp-route-id="@s.SubscriptionId">Renew</a>
+        <a class="btn btn-outline-danger btn-sm" asp-action="Cancel" asp-route-id="@s.SubscriptionId">Cancel</a>
+    }
+    else if (s.Status == SubscriptionStatuses.Expired)
+    {
+        <a class="btn btn-outline-primary btn-sm" asp-action="Renew" asp-route-id="@s.SubscriptionId">Renew</a>
+    }
+    else
+    {
+        <!-- Cancelled: no actions -->
+    }
+</td>
                                 </tr>
                             }
                             </tbody>

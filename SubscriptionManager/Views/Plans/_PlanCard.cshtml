@@ -1,4 +1,5 @@
 ﻿@model SubscriptionManager.Models.Domain.Plan
+@using SubscriptionManager.Models.Domain
 <div class="col">
     <div class="card h-100 shadow-sm">
         <div class="card-body d-flex flex-column">
@@ -9,7 +10,19 @@
             <p class="card-text text-muted mb-3">@Model.Description</p>
             <div class="mt-auto d-flex justify-content-between align-items-center">
                 <div class="fs-5 fw-semibold">@Model.Price.ToString("C")</div>
-                <a class="btn btn-primary btn-sm" asp-controller="Subscriptions" asp-action="Create" asp-route-planId="@Model.PlanId">Choose</a>
+
+                @if (!(User?.Identity?.IsAuthenticated ?? false))
+                {
+                    <a class="btn btn-outline-primary btn-sm" asp-controller="Account" asp-action="Login">Sign in to subscribe</a>
+                }
+                else if (User.IsInRole(AppRoles.Admin))
+                {
+                    <button class="btn btn-outline-secondary btn-sm" disabled>Not available for admin</button>
+                }
+                else
+                {
+                    <a class="btn btn-primary btn-sm" asp-controller="Subscriptions" asp-action="Create" asp-route-planId="@Model.PlanId">Choose</a>
+                }
             </div>
         </div>
     </div>

@@ -40,10 +40,11 @@ namespace SubscriptionManager.Services.Implementations
             try
             {
                 // Validate user and plan
-                const string userSql = "SELECT COUNT(*) FROM dbo.Users WHERE UserId = @UserId;";
-                var userExists = await conn.ExecuteScalarAsync<int>(userSql, new { UserId = userId }, tx);
-                if (userExists == 0) throw new InvalidOperationException("User not found.");
-
+                const string userSql = "SELECT TOP 1 UserId, [Role] FROM dbo.Users WHERE UserId = @UserId;";
+                var userRow = await conn.QueryFirstOrDefaultAsync<(int UserId, string Role)>(userSql, new { UserId = userId }, tx);
+                if (userRow.UserId == 0) throw new InvalidOperationException("User not found.");
+                if (string.Equals(userRow.Role, AppRoles.Admin, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException("Admins cannot subscribe to plans.");
                 const string planSql = @"SELECT TOP 1 PlanId, [Name] AS PlanName, Price, DurationDays FROM dbo.Plans WHERE PlanId = @PlanId;";
                 var plan = await conn.QueryFirstOrDefaultAsync<(int PlanId, string PlanName, decimal Price, int DurationDays)>(planSql, new { PlanId = planId }, tx);
                 if (plan.PlanId == 0) throw new InvalidOperationException("Plan not found.");

@@ -29,11 +29,15 @@ namespace SubscriptionManager.Controllers
             return View(page);
         }
 
-        // Public browse for subscribers and guests
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Browse([FromQuery] PlanListQuery query, CancellationToken ct)
         {
+            if (User?.Identity?.IsAuthenticated == true && User.IsInRole(AppRoles.Admin))
+            {
+                TempData["Error"] = "Admins cannot browse plans.";
+                return RedirectToAction("Dashboard", "Admin");
+            }
             query.PageSize = query.PageSize <= 0 ? 12 : query.PageSize;
             var page = await _plans.GetPagedAsync(query, ct);
             return View(page);

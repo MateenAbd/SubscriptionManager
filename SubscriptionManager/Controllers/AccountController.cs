@@ -48,7 +48,7 @@ namespace SubscriptionManager.Controllers
                 var token = _jwt.Generate(user);
                 Response.Cookies.Append("AppJwt", token, new Microsoft.AspNetCore.Http.CookieOptions { HttpOnly = true, Secure = false, SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax });
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Dashboard", "Subscriptions");
             }
             catch (System.Exception ex)
             {
@@ -86,10 +86,11 @@ namespace SubscriptionManager.Controllers
             var token = _jwt.Generate(user);
             Response.Cookies.Append("AppJwt", token, new Microsoft.AspNetCore.Http.CookieOptions { HttpOnly = true, Secure = false, SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax });
 
+            if (user.Role == AppRoles.Admin)
+                return RedirectToAction("Dashboard", "Admin");
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
-
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Dashboard", "Subscriptions");
         }
 
         [HttpPost]

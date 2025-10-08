@@ -15,6 +15,8 @@ using SubscriptionManager.Services.Implementations;
 using SubscriptionManager.Services.Interfaces;
 using System.Text;
 using System.Threading.Channels;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -112,6 +114,19 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
 }
+var defaultCultureName = builder.Configuration.GetValue<string>("App:DefaultCulture") ?? "en-IN";
+var defaultCulture = new CultureInfo(defaultCultureName);
+CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
+CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
+
+var localizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(defaultCulture),
+    SupportedCultures = new[] { defaultCulture },
+    SupportedUICultures = new[] { defaultCulture }
+};
+app.UseRequestLocalization(localizationOptions);
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

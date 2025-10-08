@@ -24,33 +24,48 @@
 
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Plans" asp-action="Browse">Browse Plans</a>
-                        </li>
-                        @if (User.Identity?.IsAuthenticated ?? false)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Subscriptions" asp-action="Dashboard">Dashboard</a>
-                            </li>
-                        }
-                        @if (User.IsInRole(AppRoles.Admin))
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="adminDrop" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Admin
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="adminDrop">
-                                    <li><a class="dropdown-item" asp-controller="Plans" asp-action="Index">Plans</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Payments" asp-action="Index">Payments</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Reports" asp-action="Index">Reports</a></li>
-                                </ul>
-                            </li>
-                        }
-                    </ul>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+    </li>
+
+    @if (!(User?.IsInRole(AppRoles.Admin) ?? false))
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Plans" asp-action="Browse">Browse Plans</a>
+        </li>
+    }
+
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        if (User.IsInRole(AppRoles.Admin))
+        {
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Subscriptions" asp-action="Dashboard">Dashboard</a>
+            </li>
+        }
+    }
+
+    @if (User.IsInRole(AppRoles.Admin))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="adminDrop" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Admin
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="adminDrop">
+                <li><a class="dropdown-item" asp-controller="Plans" asp-action="Index">Plans</a></li>
+                <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a></li>
+                <li><a class="dropdown-item" asp-controller="Payments" asp-action="Index">Payments</a></li>
+                <li><a class="dropdown-item" asp-controller="Reports" asp-action="Index">Reports</a></li>
+            </ul>
+        </li>
+    }
+</ul>
 
                     <partial name="~/Views/Shared/_NavLoginPartial.cshtml" />
                 </div>
