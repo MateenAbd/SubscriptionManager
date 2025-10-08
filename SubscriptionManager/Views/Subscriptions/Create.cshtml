@@ -1,0 +1,70 @@
+﻿@model SubscriptionManager.Models.ViewModels.SubscriptionCreateViewModel
+@{
+    ViewData["Title"] = "New Subscription";
+    var plans = (IEnumerable<SubscriptionManager.Models.Domain.Plan>) (ViewBag.Plans ?? Array.Empty<SubscriptionManager.Models.Domain.Plan>());
+    var preselect = Context.Request.Query["planId"].ToString();
+}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h4 mb-3">Subscribe</h2>
+                <form asp-action="Create" method="post" novalidate id="subForm">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="PlanId" class="form-label">Plan</label>
+                        <select asp-for="PlanId" class="form-select" id="planSelect">
+                            <option value="">Select a plan...</option>
+                            @foreach (var p in plans)
+                            {
+                                var selected = (!string.IsNullOrEmpty(preselect) && preselect == p.PlanId.ToString()) ? "selected" : null;
+                                <option value="@p.PlanId" selected="@selected">@p.Name (@p.BillingCycle) - @p.Price.ToString("C")</option>
+                            }
+                        </select>
+                        <span asp-validation-for="PlanId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PaymentMethod" class="form-label"></label>
+                        <select asp-for="PaymentMethod" class="form-select">
+                            <option>Credit Card</option>
+                            <option>PayPal</option>
+                        </select>
+                        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" asp-for="AutoRenew" />
+                        <label class="form-check-label" asp-for="AutoRenew"></label>
+                    </div>
+
+                    <div class="alert alert-info" id="planInfo" role="alert" style="display:none;"></div>
+
+                    <button class="btn btn-primary">Subscribe</button>
+                    <a asp-controller="Plans" asp-action="Browse" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
+    <script>
+        $(function(){
+            function loadPlanInfo(id){
+                if(!id){ $("#planInfo").hide(); return; }
+                $.getJSON("@Url.Action("PlanInfo","Subscriptions")", { id: id })
+                 .done(function(p){
+                    $("#planInfo").html(
+                        `<strong>${p.name}</strong> - ${p.billingCycle} | Price: ${p.price} | Duration: ${p.durationDays} days`
+                    ).show();
+                 }).fail(function(){ $("#planInfo").hide(); });
+            }
+            $("#planSelect").on("change", function(){ loadPlanInfo($(this).val()); });
+            var initial = $("#planSelect").val(); if(initial) loadPlanInfo(initial);
+        });
+    </script>
+}

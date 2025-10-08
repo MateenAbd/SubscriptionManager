@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Refund Payment";
+    var paymentId = (int)(ViewBag.PaymentId ?? 0);
+}
+<div class="alert alert-warning">
+    <h4 class="alert-heading">Refund Payment</h4>
+    <p>Are you sure you want to refund payment <strong>#@paymentId</strong>?</p>
+    <form asp-action="RefundConfirmed" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="paymentId" value="@paymentId" />
+        <button class="btn btn-danger">Refund</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>

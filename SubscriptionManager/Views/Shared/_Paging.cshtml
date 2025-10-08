@@ -1,0 +1,54 @@
+﻿@using System.Collections.Generic
+@model dynamic
+@{
+    int pageIndex = (int)Model.PageIndex;
+    int totalPages = (int)Model.TotalPages;
+    if (totalPages <= 1)
+    {
+        return;
+    }
+
+    // Keep current query string
+    var route = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
+    foreach (var kv in Context.Request.Query)
+    {
+        route[kv.Key] = kv.Value.ToString();
+    }
+    string pageKey = "Page";
+
+    int prev = pageIndex - 1;
+    int next = pageIndex + 1;
+    bool hasPrev = prev >= 1;
+    bool hasNext = next <= totalPages;
+}
+<nav aria-label="Pagination">
+    <ul class="pagination">
+        @{
+            route[pageKey] = "1";
+        }
+        <li class="page-item @(pageIndex == 1 ? "disabled" : "")">
+            <a class="page-link" asp-all-route-data="route">First</a>
+        </li>
+        @{
+            route[pageKey] = (pageIndex - 1).ToString();
+        }
+        <li class="page-item @(hasPrev ? "" : "disabled")">
+            <a class="page-link" asp-all-route-data="route">Prev</a>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">Page @pageIndex of @totalPages</span>
+        </li>
+        @{
+            route[pageKey] = (pageIndex + 1).ToString();
+        }
+        <li class="page-item @(hasNext ? "" : "disabled")">
+            <a class="page-link" asp-all-route-data="route">Next</a>
+        </li>
+        @{
+            route[pageKey] = totalPages.ToString();
+        }
+        <li class="page-item @(pageIndex == totalPages ? "disabled" : "")">
+            <a class="page-link" asp-all-route-data="route">Last</a>
+        </li>
+    </ul>
+</nav>

@@ -1,0 +1,60 @@
+﻿@model SubscriptionManager.Models.ViewModels.PlanFormViewModel
+@{
+    ViewData["Title"] = "Create Plan";
+}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h4 mb-3">Create Plan</h2>
+                <form asp-action="Create" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" rows="3" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="Price" class="form-label"></label>
+                            <input asp-for="Price" class="form-control" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="BillingCycle" class="form-label"></label>
+                            <select asp-for="BillingCycle" class="form-select">
+                                <option>Monthly</option>
+                                <option>Yearly</option>
+                            </select>
+                            <span asp-validation-for="BillingCycle" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="DurationDays" class="form-label"></label>
+                            <input asp-for="DurationDays" class="form-control" />
+                            <span asp-validation-for="DurationDays" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-3">
+                        <label asp-for="Features" class="form-label"></label>
+                        <textarea asp-for="Features" rows="3" class="form-control" placeholder='JSON or comma-separated'></textarea>
+                        <span asp-validation-for="Features" class="text-danger"></span>
+                    </div>
+
+                    <button class="btn btn-primary">Create</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
+}

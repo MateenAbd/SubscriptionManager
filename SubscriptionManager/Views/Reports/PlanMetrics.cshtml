@@ -1,0 +1,45 @@
+﻿@model IEnumerable<SubscriptionManager.Models.ViewModels.PlanMetricsItem>
+@{
+    ViewData["Title"] = "Plan Metrics";
+    var from = (DateTime?)ViewBag.From;
+    var to = (DateTime?)ViewBag.To;
+}
+<h2 class="h4 mb-3">Plan Metrics</h2>
+
+<form method="get" class="row g-3 mb-3">
+    <div class="col-md-4">
+        <label class="form-label">From</label>
+        <input class="form-control" type="date" name="from" value="@(from?.ToString("yyyy-MM-dd"))" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">To</label>
+        <input class="form-control" type="date" name="to" value="@(to?.ToString("yyyy-MM-dd"))" />
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-outline-primary">Apply</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Plan</th>
+                <th>Total Subscriptions</th>
+                <th>Cancelled</th>
+                <th>Churn</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.PlanName</td>
+                <td>@m.TotalSubscriptions</td>
+                <td>@m.CancelledSubscriptions</td>
+                <td>@(m.TotalSubscriptions == 0 ? "-" : (m.ChurnRate.ToString("P2")))</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

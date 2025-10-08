@@ -1,0 +1,15 @@
+﻿@model SubscriptionManager.Models.Domain.Plan
+@{
+    ViewData["Title"] = "Delete Plan";
+}
+<div class="alert alert-danger">
+    <h4 class="alert-heading">Delete Plan</h4>
+    <p>Are you sure you want to delete plan "<strong>@Model.Name</strong>"?</p>
+    <hr />
+    <form asp-action="Delete" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.PlanId" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>

@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+}
+<h2 class="h4 mb-3">Reports</h2>
+
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Revenue</h5>
+                <p class="card-text text-muted">Total revenue for a date range.</p>
+                <form asp-action="Revenue" method="get" class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label">From</label>
+                        <input class="form-control" name="From" type="date" value="@DateTime.UtcNow.AddDays(-30).ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">To</label>
+                        <input class="form-control" name="To" type="date" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary btn-sm">View</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Plan Metrics</h5>
+                <p class="card-text text-muted">Subscriptions and churn by plan.</p>
+                <a class="btn btn-outline-primary btn-sm" asp-action="PlanMetrics">View</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Churn</h5>
+                <p class="card-text text-muted">Overall churn rate across all plans.</p>
+                <a class="btn btn-outline-primary btn-sm" asp-action="Churn">View</a>
+            </div>
+        </div>
+    </div>
+</div>

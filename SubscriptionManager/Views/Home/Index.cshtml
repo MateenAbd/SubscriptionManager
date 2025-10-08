@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+<div class="py-5 text-center">
+    <h1 class="display-5 fw-bold">Manage subscriptions with ease</h1>
+    <p class="lead text-muted">Clean, fast, and reliable subscription management for your product.</p>
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <a class="btn btn-primary btn-lg px-4 gap-3" asp-controller="Plans" asp-action="Browse">Browse Plans</a>
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <a class="btn btn-outline-secondary btn-lg px-4" asp-controller="Subscriptions" asp-action="Dashboard">My Dashboard</a>
+        }
+        else
+        {
+            <a class="btn btn-outline-secondary btn-lg px-4" asp-controller="Account" asp-action="Register">Get Started</a>
+        }
+    </div>
+</div>

@@ -1,0 +1,27 @@
+﻿@model SubscriptionManager.Models.Domain.Subscription
+@{
+    ViewData["Title"] = "Renew Subscription";
+}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h5 mb-3">Renew Subscription #@Model.SubscriptionId</h2>
+        <p>Plan: <strong>@Model.PlanName</strong></p>
+        <p>Current ends on: <strong>@Model.EndDate.ToString("yyyy-MM-dd")</strong></p>
+
+        <form asp-action="Renew" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.SubscriptionId" />
+            <div class="col-md-4">
+                <label for="paymentMethod" class="form-label">Payment Method</label>
+                <select id="paymentMethod" name="paymentMethod" class="form-select">
+                    <option>Credit Card</option>
+                    <option>PayPal</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-primary">Renew</button>
+                <a asp-action="Dashboard" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+﻿@{
+    ViewData["Title"] = "Churn";
+    decimal rate = ViewBag.Rate ?? 0m;
+}
+<h2 class="h4 mb-3">Churn</h2>
+
+<div class="alert alert-info">
+    <strong>Overall churn rate:</strong> @rate.ToString("P2")
+</div>

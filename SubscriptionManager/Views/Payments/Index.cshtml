@@ -1,0 +1,69 @@
+﻿@model SubscriptionManager.Models.ViewModels.Page<SubscriptionManager.Models.Domain.Payment>
+@{
+    ViewData["Title"] = "Payments";
+    decimal total = ViewBag.Total ?? 0m;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h4">Payments</h2>
+    <div class="text-muted">Total: <strong>@total.ToString("C")</strong></div>
+</div>
+
+<form class="row row-cols-lg-auto g-3 align-items-end mb-3" method="get">
+    <div class="col-12">
+        <label class="form-label">From</label>
+        <input class="form-control" type="date" name="From" value="@Context.Request.Query["From"]" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">To</label>
+        <input class="form-control" type="date" name="To" value="@Context.Request.Query["To"]" />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Status</label>
+        <select class="form-select" name="Status">
+            <option value="">All</option>
+            <option value="Completed" selected="@(Context.Request.Query["Status"]=="Completed")">Completed</option>
+            <option value="Refunded" selected="@(Context.Request.Query["Status"]=="Refunded")">Refunded</option>
+            <option value="Failed" selected="@(Context.Request.Query["Status"]=="Failed")">Failed</option>
+        </select>
+    </div>
+    <div class="col-12">
+        <button class="btn btn-outline-primary">Apply</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Id</th>
+                <th>Subscription</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var p in Model.Items)
+        {
+            <tr>
+                <td>@p.PaymentId</td>
+                <td>@p.SubscriptionId</td>
+                <td>@p.Amount.ToString("C")</td>
+                <td>@p.PaymentDate.ToString("yyyy-MM-dd")</td>
+                <td>@p.PaymentMethod</td>
+                <td><span class="badge bg-light text-dark">@p.Status</span></td>
+                <td class="text-end">
+                    @if (p.Status == "Completed")
+                    {
+                        <a class="btn btn-sm btn-outline-danger" asp-action="Refund" asp-route-id="@p.PaymentId">Refund</a>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<partial name="~/Views/Shared/_Paging.cshtml" model="Model" />

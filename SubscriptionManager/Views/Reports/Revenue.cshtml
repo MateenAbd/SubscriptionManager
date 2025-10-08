@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Revenue";
+    var q = (SubscriptionManager.Models.ViewModels.ReportQueryViewModel)ViewBag.Query;
+    decimal total = ViewBag.Total ?? 0m;
+}
+<h2 class="h4 mb-3">Revenue</h2>
+
+<form asp-action="Revenue" method="get" class="row g-3 mb-3">
+    <div class="col-md-4">
+        <label class="form-label">From</label>
+        <input class="form-control" type="date" name="From" value="@q.From.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">To</label>
+        <input class="form-control" type="date" name="To" value="@q.To.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-primary">Refresh</button>
+    </div>
+</form>
+
+<div class="alert alert-success">
+    <strong>Total Revenue:</strong> @total.ToString("C") for @q.From.ToString("yyyy-MM-dd") to @q.To.ToString("yyyy-MM-dd")
+</div>

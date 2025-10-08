@@ -1,0 +1,87 @@
+﻿@model SubscriptionManager.Models.Domain.User
+@using SubscriptionManager.Models.Domain
+@{
+    ViewData["Title"] = "User Details";
+    var subs = (IEnumerable<Subscription>) (ViewBag.Subscriptions ?? Array.Empty<Subscription>());
+    var pays = (IEnumerable<Payment>) (ViewBag.Payments ?? Array.Empty<Payment>());
+}
+<h2 class="h4 mb-3">User Details</h2>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">@Model.FirstName @Model.LastName</h5>
+        <p class="card-text mb-1"><strong>Email:</strong> @Model.Email</p>
+        <p class="card-text mb-1"><strong>Phone:</strong> @Model.Phone</p>
+        <p class="card-text mb-1"><strong>Address:</strong> @Model.Address</p>
+        <p class="card-text mb-1"><strong>Role:</strong> <span class="badge bg-secondary">@Model.Role</span></p>
+        <p class="card-text"><strong>Registered:</strong> @Model.RegistrationDate.ToString("yyyy-MM-dd")</p>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Subscriptions</div>
+            <div class="card-body">
+                @if (!subs.Any())
+                {
+                    <p class="text-muted mb-0">No subscriptions.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr><th>Id</th><th>Plan</th><th>Status</th><th>Start</th><th>End</th></tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var s in subs)
+                            {
+                                <tr>
+                                    <td>@s.SubscriptionId</td>
+                                    <td>@s.PlanName</td>
+                                    <td><span class="badge bg-light text-dark">@s.Status</span></td>
+                                    <td>@s.StartDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@s.EndDate.ToString("yyyy-MM-dd")</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Payments</div>
+            <div class="card-body">
+                @if (!pays.Any())
+                {
+                    <p class="text-muted mb-0">No payments.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr><th>Id</th><th>Amount</th><th>Date</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var p in pays)
+                            {
+                                <tr>
+                                    <td>@p.PaymentId</td>
+                                    <td>@p.Amount.ToString("C")</td>
+                                    <td>@p.PaymentDate.ToString("yyyy-MM-dd")</td>
+                                    <td><span class="badge bg-light text-dark">@p.Status</span></td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

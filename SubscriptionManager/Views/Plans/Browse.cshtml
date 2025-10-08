@@ -1,0 +1,32 @@
+﻿@model SubscriptionManager.Models.ViewModels.Page<SubscriptionManager.Models.Domain.Plan>
+@{
+    ViewData["Title"] = "Browse Plans";
+}
+<h2 class="h4 mb-3">Browse Plans</h2>
+
+<form class="row row-cols-lg-auto g-3 align-items-end mb-3" method="get">
+    <div class="col-12">
+        <label class="form-label">Search</label>
+        <input type="text" name="Search" value="@Context.Request.Query["Search"]" class="form-control" placeholder="Name or cycle..." />
+    </div>
+    <div class="col-12">
+        <label class="form-label">Billing Cycle</label>
+        <select name="BillingCycle" class="form-select">
+            <option value="">All</option>
+            <option value="Monthly" selected="@(Context.Request.Query["BillingCycle"]=="Monthly")">Monthly</option>
+            <option value="Yearly" selected="@(Context.Request.Query["BillingCycle"]=="Yearly")">Yearly</option>
+        </select>
+    </div>
+    <div class="col-12">
+        <button class="btn btn-outline-primary">Search</button>
+    </div>
+</form>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+    @foreach (var p in Model.Items)
+    {
+        <partial name="_PlanCard" model="p" />
+    }
+</div>
+
+<partial name="~/Views/Shared/_Paging.cshtml" model="Model" />

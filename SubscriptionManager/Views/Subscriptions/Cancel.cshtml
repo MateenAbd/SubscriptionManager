@@ -1,0 +1,16 @@
+﻿@model SubscriptionManager.Models.Domain.Subscription
+@{
+    ViewData["Title"] = "Cancel Subscription";
+}
+<div class="alert alert-warning">
+    <h4 class="alert-heading">Cancel Subscription</h4>
+    <p>Are you sure you want to cancel your subscription <strong>#@Model.SubscriptionId</strong> for <strong>@Model.PlanName</strong>?</p>
+    <p class="mb-0">Any refundable amount will be calculated automatically.</p>
+    <hr />
+    <form asp-action="Cancel" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.SubscriptionId" />
+        <button type="submit" class="btn btn-danger">Cancel Subscription</button>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary">Keep Subscription</a>
+    </form>
+</div>

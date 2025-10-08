@@ -1,0 +1,68 @@
+:root {
+    --sm-primary: #0d6efd;
+    --sm-muted: #6c757d;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    margin-top: auto;
+}
+
+.navbar-brand {
+    letter-spacing: .2px;
+}
+
+.card {
+    border-radius: .5rem;
+}
+
+.table > :not(caption) > * > * {
+    vertical-align: middle;
+}
+
+.btn-outline-secondary {
+    border-color: #ced4da;
+}
+
+.form-control, .form-select {
+    border-radius: .45rem;
+}
+
+.toast {
+    opacity: 1;
+}
+
+.badge.bg-info-subtle {
+    background-color: #cff4fc;
+    border: 1px solid #9eeaf9;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Utilities */
+.mt-2 {
+    margin-top: .5rem !important;
+}
+
+.mt-3 {
+    margin-top: 1rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.py-5 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+}
